@@ -1,5 +1,5 @@
-import { constants } from "./src/constants";
-import { Game } from "./src/game";
+import { constants } from "./constants";
+import { Game } from "./game";
 
 /**
  * Main function

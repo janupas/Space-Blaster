@@ -1,4 +1,4 @@
-import { Player } from "./class/Player";
+import { Player } from "./classes/Player";
 import { constants } from "./constants";
 
 /**
@@ -7,8 +7,8 @@ import { constants } from "./constants";
 export class Game {
   constructor(canvas) {
     this.canvas = canvas;
-    this.playerX = canvas.width - 350;
-    this.playerY = 0;
+    this.playerX = canvas.width - 300;
+    this.playerY = 20;
     this.context = this.canvas.getContext("2d");
     this.player = new Player(
       this.context,
