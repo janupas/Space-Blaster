@@ -1,6 +1,8 @@
+/**
+ * This is the base skelton for the working game
+ */
 export class Game {
-  constructor(FPS, canvas) {
-    this.FPS = FPS;
+  constructor(canvas) {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d");
   }
@@ -9,5 +11,5 @@ export class Game {
   start() {}
 
   // Runs per frame
-  update() {}
+  update(id) {}
 }
