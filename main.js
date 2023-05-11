@@ -5,7 +5,12 @@ import { Game } from "./src/game";
  * Main function
  */
 function main() {
-  const game = new Game(document.getElementById("canvas"));
+  const canvas = document.getElementById("canvas");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const game = new Game(canvas);
   let id = 0;
 
   game.start();
