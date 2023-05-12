@@ -19,7 +19,7 @@ const BULLET_IMG = "./assets/bullet.png";
 const ASTEROID_IMG = "./assets/asteroid.png";
 const INITIAL_PLAYER_Y = canvas.height - (PLAYER_HEIGHT + 50);
 const ASTEROID_SPAWN_POINT_X = () =>
-  Math.random() * canvas.width - MAX_ASTEROID_WIDTH;
+  Math.random() * canvas.width - MAX_ASTEROID_WIDTH + 100;
 
 class Bullet {
   constructor(x, y, imgSrc) {
