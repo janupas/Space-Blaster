@@ -16,6 +16,7 @@ const ASTEROID_SPAWN_POINT_Y = 0;
 const ASTEROID_SPAWN_INTERVAL = 3000;
 const PLAYER_IMG = "./assets/ship.png";
 const BULLET_IMG = "./assets/bullet.png";
+const ASTEROID_IMG = "./assets/asteroid.png";
 const INITIAL_PLAYER_Y = canvas.height - (PLAYER_HEIGHT + 50);
 const ASTEROID_SPAWN_POINT_X = () =>
   Math.random() * canvas.width - MAX_ASTEROID_WIDTH;
@@ -41,16 +42,18 @@ class Bullet {
 }
 
 class Asteroid {
-  constructor(x, y, w, h) {
+  constructor(x, y, w, h, imgSrc) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.img = new Image();
+    this.img.src = imgSrc;
     this.velocity = 2;
   }
 
   draw() {
-    context.fillRect(this.x, this.y, this.w, this.h);
+    context.drawImage(this.img, this.x, this.y, this.w, this.h);
   }
 
   update() {
@@ -97,7 +100,8 @@ function spawnAsteroids() {
       ASTEROID_SPAWN_POINT_X(),
       ASTEROID_SPAWN_POINT_Y,
       50,
-      50
+      50,
+      ASTEROID_IMG
     );
     ASTEROIDS.push(asteroid);
   }, ASTEROID_SPAWN_INTERVAL);
