@@ -4,49 +4,73 @@ const context = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Game variables
 const FPS = 60;
 let LOOP_ID = 0;
-
-// Player variables
+const BULLETS = [];
+const ASTEROIDS = [];
 const PLAYER_WIDTH = 100;
 const PLAYER_HEIGHT = 100;
 const INITIAL_PLAYER_X = 0;
-const INITIAL_PLAYER_Y = canvas.height - (PLAYER_HEIGHT + 100);
-
-// Bullet array
-const BULLETS = [];
+const MAX_ASTEROID_WIDTH = 200;
+const ASTEROID_SPAWN_POINT_Y = 0;
+const ASTEROID_SPAWN_INTERVAL = 3000;
+const PLAYER_IMG = "./assets/ship.png";
+const BULLET_IMG = "./assets/bullet.png";
+const INITIAL_PLAYER_Y = canvas.height - (PLAYER_HEIGHT + 50);
+const ASTEROID_SPAWN_POINT_X = () =>
+  Math.random() * canvas.width - MAX_ASTEROID_WIDTH;
 
 class Bullet {
-  constructor(x, y) {
+  constructor(x, y, imgSrc) {
     this.x = x;
     this.y = y;
-    this.w = 6;
-    this.h = 10;
+    this.w = 10;
+    this.h = 25;
+    this.img = new Image();
+    this.img.src = imgSrc;
     this.velocity = 10;
   }
 
   draw() {
-    context.fillStyle = "red";
-    context.fillRect(this.x, this.y, this.w, this.h);
+    context.drawImage(this.img, this.x, this.y, this.w, this.h);
   }
 
   update() {
-    this.y -= 10;
+    this.y -= this.velocity;
   }
 }
 
-class Ship {
+class Asteroid {
   constructor(x, y, w, h) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.velocity = 10;
+    this.velocity = 2;
   }
 
   draw() {
     context.fillRect(this.x, this.y, this.w, this.h);
+  }
+
+  update() {
+    this.y += this.velocity;
+  }
+}
+
+class Ship {
+  constructor(x, y, w, h, imgSrc) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = new Image();
+    this.img.src = imgSrc;
+    this.velocity = 13;
+  }
+
+  draw() {
+    context.drawImage(this.img, this.x, this.y, this.w, this.h);
   }
 
   update(direction) {
@@ -63,14 +87,36 @@ const ship = new Ship(
   INITIAL_PLAYER_X,
   INITIAL_PLAYER_Y,
   PLAYER_WIDTH,
-  PLAYER_HEIGHT
+  PLAYER_HEIGHT,
+  PLAYER_IMG
 );
 
-window.addEventListener("mousedown", (e) => {
-  const bullet = new Bullet(ship.x + ship.w / 2, ship.y);
-  BULLETS.push(bullet);
+function spawnAsteroids() {
+  setInterval(() => {
+    const asteroid = new Asteroid(
+      ASTEROID_SPAWN_POINT_X(),
+      ASTEROID_SPAWN_POINT_Y,
+      50,
+      50
+    );
+    ASTEROIDS.push(asteroid);
+  }, ASTEROID_SPAWN_INTERVAL);
+}
 
-  console.log(BULLETS);
+function checkCollision(obj1, obj2) {
+  if (
+    obj1.x < obj2.x + obj2.w &&
+    obj1.x + obj1.w > obj2.x &&
+    obj1.y < obj2.y + obj2.h &&
+    obj1.y + obj1.h > obj2.y
+  ) {
+    return true;
+  }
+}
+
+window.addEventListener("mousedown", (e) => {
+  const bullet = new Bullet(ship.x + ship.w / 2, ship.y, BULLET_IMG);
+  BULLETS.push(bullet);
 });
 
 window.addEventListener("keydown", (e) => {
@@ -91,7 +137,9 @@ window.addEventListener("keydown", (e) => {
 });
 
 function start() {
-  ship.draw();
+  ship.img.onload = () => {
+    ship.draw();
+  };
 }
 
 function update() {
@@ -106,9 +154,23 @@ function update() {
       BULLETS.splice(i, 1);
     }
   }
+
+  for (let i = 0; i < ASTEROIDS.length; i++) {
+    ASTEROIDS[i].update();
+    ASTEROIDS[i].draw();
+  }
+
+  for (let i = 0; i < ASTEROIDS.length; i++) {
+    for (let j = 0; j < BULLETS.length; j++) {
+      if (checkCollision(ASTEROIDS[i], BULLETS[j])) {
+        ASTEROIDS.splice(i, 1);
+      }
+    }
+  }
 }
 
 start();
+spawnAsteroids();
 
 LOOP_ID = setInterval(() => {
   update();
