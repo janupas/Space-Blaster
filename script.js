@@ -6,6 +6,7 @@ canvas.height = window.innerHeight;
 
 const FPS = 60;
 let LOOP_ID = 0;
+let LIVES = 3;
 const BULLETS = [];
 const ASTEROIDS = [];
 const PLAYER_WIDTH = 100;
@@ -94,6 +95,13 @@ const ship = new Ship(
   PLAYER_IMG
 );
 
+class Screen {
+  static toggle(id, status) {
+    const element = document.getElementById(id);
+    element.style.display = status ? "block" : "none";
+  }
+}
+
 function spawnAsteroids() {
   setInterval(() => {
     const asteroid = new Asteroid(
@@ -146,6 +154,16 @@ function start() {
   };
 }
 
+function gameOver() {
+  clearInterval(LOOP_ID);
+  Screen.toggle("game-over", true);
+
+  setTimeout(() => {
+    Screen.toggle("game-over", false);
+    window.location.reload();
+  }, 2000);
+}
+
 function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   ship.draw();
@@ -162,6 +180,11 @@ function update() {
   for (let i = 0; i < ASTEROIDS.length; i++) {
     ASTEROIDS[i].update();
     ASTEROIDS[i].draw();
+
+    if (ASTEROIDS[i].y >= canvas.height) {
+      ASTEROIDS.splice(i, 1);
+      LIVES--; // Losing lives
+    }
   }
 
   for (let i = 0; i < ASTEROIDS.length; i++) {
@@ -170,6 +193,10 @@ function update() {
         ASTEROIDS.splice(i, 1);
       }
     }
+  }
+
+  if (LIVES <= 0) {
+    gameOver();
   }
 }
 
