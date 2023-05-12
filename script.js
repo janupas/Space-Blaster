@@ -14,6 +14,28 @@ const PLAYER_HEIGHT = 100;
 const INITIAL_PLAYER_X = 0;
 const INITIAL_PLAYER_Y = canvas.height - (PLAYER_HEIGHT + 100);
 
+// Bullet array
+const BULLETS = [];
+
+class Bullet {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.w = 6;
+    this.h = 10;
+    this.velocity = 10;
+  }
+
+  draw() {
+    context.fillStyle = "red";
+    context.fillRect(this.x, this.y, this.w, this.h);
+  }
+
+  update() {
+    this.y -= 10;
+  }
+}
+
 class Ship {
   constructor(x, y, w, h) {
     this.x = x;
@@ -36,6 +58,7 @@ class Ship {
   }
 }
 
+// This is the player
 const ship = new Ship(
   INITIAL_PLAYER_X,
   INITIAL_PLAYER_Y,
@@ -43,20 +66,12 @@ const ship = new Ship(
   PLAYER_HEIGHT
 );
 
-function start() {
-  ship.draw();
-}
+window.addEventListener("mousedown", (e) => {
+  const bullet = new Bullet(ship.x + ship.w / 2, ship.y);
+  BULLETS.push(bullet);
 
-function update() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  ship.draw();
-}
-
-start();
-
-LOOP_ID = setInterval(() => {
-  update();
-}, 1000 / FPS);
+  console.log(BULLETS);
+});
 
 window.addEventListener("keydown", (e) => {
   /**
@@ -74,3 +89,27 @@ window.addEventListener("keydown", (e) => {
     }
   }
 });
+
+function start() {
+  ship.draw();
+}
+
+function update() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  ship.draw();
+
+  for (let i = 0; i < BULLETS.length; i++) {
+    BULLETS[i].update();
+    BULLETS[i].draw();
+
+    if (BULLETS[i].y <= 0) {
+      BULLETS.splice(i, 1);
+    }
+  }
+}
+
+start();
+
+LOOP_ID = setInterval(() => {
+  update();
+}, 1000 / FPS);
